@@ -7,12 +7,12 @@ using System.ComponentModel;
 
 namespace Network_Audit
 {
-    internal class Networker : INotifyPropertyChanged
+    internal class NetworkerModel : INotifyPropertyChanged
     {
-        private List<NetworkViewModel> networkResources;
+        private List<NetworkerViewModel> networkResources;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public List<NetworkViewModel> NetworkResources //Make a public list to bind to the DataGrid ItemsSource
+        public List<NetworkerViewModel> NetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
             get { return networkResources; }
             set
@@ -27,8 +27,8 @@ namespace Network_Audit
 
         public void StartAudit()
         {
-            NetworkResources = new List<NetworkViewModel> { };
-            NetworkViewModel myobj = new NetworkViewModel();
+            NetworkResources = new List<NetworkerViewModel> { };
+            NetworkerViewModel myobj = new NetworkerViewModel();
             NetworkResources.Add(myobj);
         }
 

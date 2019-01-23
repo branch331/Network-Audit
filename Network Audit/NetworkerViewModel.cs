@@ -7,12 +7,11 @@ using System.Net.NetworkInformation;
 
 namespace Network_Audit
 {
-    internal class NetworkViewModel
+    internal class NetworkerViewModel
     {
-        public NetworkViewModel()
+        public NetworkerViewModel()
         {
-            string a = "test";
-            IP_Address = a;
+            IP_Address = ObtainIPAddress();
             Connected = NetworkInterface.GetIsNetworkAvailable();
             InternetSpeed = 5;
             Num_devices = NetworkInterface.GetAllNetworkInterfaces().Length; //Not the correct call
@@ -21,6 +20,18 @@ namespace Network_Audit
         public string ObtainIPAddress()
         {
             string ip_Address = "";
+
+            foreach (NetworkInterface x in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (x.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach(GatewayIPAddressInformation y in x.GetIPProperties().GatewayAddresses)
+                    {
+                        ip_Address = y.Address.ToString();
+                    }
+                }
+            }
+
             return ip_Address;
         }
 
@@ -32,6 +43,7 @@ namespace Network_Audit
 
         public double CalculateNumberDevices()
         {
+
             double num_devices = 5;
             return num_devices;
         }

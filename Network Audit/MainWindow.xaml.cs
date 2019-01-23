@@ -20,7 +20,7 @@ namespace Network_Audit
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Networker obj = new Networker();
+        private NetworkerModel obj = new NetworkerModel();
 
         public MainWindow()
         {
