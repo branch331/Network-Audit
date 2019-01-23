@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F3068C2D-2CBF-46C3-942C-64F3EDF61DF8}</ProjectGuid>
+    <ProjectGuid>{762263B1-AAE0-49A7-8A95-F1E0C9A02D8E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Network_Audit</RootNamespace>
     <AssemblyName>Network Audit</AssemblyName>
@@ -69,6 +69,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Networker.cs" />
+    <Compile Include="NetworkViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

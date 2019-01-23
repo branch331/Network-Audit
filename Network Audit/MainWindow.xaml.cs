@@ -20,9 +20,13 @@ namespace Network_Audit
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Networker obj = new Networker();
+
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = obj;
+            obj.StartAudit();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

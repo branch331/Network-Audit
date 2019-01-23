@@ -1,0 +1,15 @@
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\bin\Debug\Network Audit.exe.config
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\bin\Debug\Network Audit.exe
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\bin\Debug\Network Audit.pdb
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.csprojAssemblyReference.cache
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\MainWindow.g.cs
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\App.g.cs
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit_MarkupCompile.cache
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit_MarkupCompile.lref
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\MainWindow.baml
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.g.resources
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network_Audit.Properties.Resources.resources
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.csproj.GenerateResource.cache
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.csproj.CoreCompileInputs.cache
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.exe
+C:\Users\brand\Documents\GitHub\Network-Audit\Network Audit\obj\Debug\Network Audit.pdb

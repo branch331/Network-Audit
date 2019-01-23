@@ -17,20 +17,27 @@
         <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="30" Margin="0,0,0,-0.333">
             Network Information
         </TextBlock>
+
         <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Padding="10,50,20,50" Margin="0,0,0,-0.333">
             This application returns network information in the table below.
         </TextBlock>
 
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="315,28,0,0" TextWrapping="Wrap" Text="{Binding IP_Address, Mode=TwoWay}" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="3"/>
+
         <Button Content="Run!" HorizontalAlignment="Left" Margin="14,191,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
-                  Name="Network_Information"
-                  Width="425" Margin="10,92,0,36.667" Grid.ColumnSpan="3">
+                  Width="425" 
+                  Margin="10,92,0,36.667" 
+                  Grid.ColumnSpan="3"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding NetworkResources}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="IP Address" Binding="{Binding Path=IP_Address}" MinWidth="100"/>
-                <DataGridTextColumn Header ="Connected?" Binding="{Binding Path=Connected}" MinWidth="100"/>
-                <DataGridTextColumn Header="Internet Speed" Binding="{Binding Path=Internet_Speed}" MinWidth="100"/>
-                <DataGridTextColumn Header="Devices on Network" Binding="{Binding Path=Num_Devices}" MinWidth="100"/>
+                <DataGridTextColumn Header="IP Address" Binding="{Binding IP_Address}" MinWidth="100"/>
+                <DataGridTextColumn Header ="Connected?" Binding="{Binding Connected}" MinWidth="100"/>
+                <DataGridTextColumn Header="Internet Speed" Binding="{Binding InternetSpeed}" MinWidth="100"/>
+                <DataGridTextColumn Header="Devices on Network" Binding="{Binding Num_devices}" MinWidth="100"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
