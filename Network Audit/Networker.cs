@@ -12,7 +12,7 @@ namespace Network_Audit
         private List<NetworkViewModel> networkResources;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public List<NetworkViewModel> NetworkResources
+        public List<NetworkViewModel> NetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
             get { return networkResources; }
             set
@@ -28,13 +28,8 @@ namespace Network_Audit
         public void StartAudit()
         {
             NetworkResources = new List<NetworkViewModel> { };
-            for (int i = 0; i < 3; i++)
-            {
-                NetworkViewModel myobj = new NetworkViewModel(i.ToString());
-                NetworkResources.Add(myobj);
-                
-                //System.Windows.MessageBox.Show(myobj.IP_Address);    
-            }
+            NetworkViewModel myobj = new NetworkViewModel();
+            NetworkResources.Add(myobj);
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)

@@ -26,12 +26,11 @@ namespace Network_Audit
         {
             InitializeComponent();
             this.DataContext = obj;
-            obj.StartAudit();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            obj.StartAudit();
         }
     }
 }
