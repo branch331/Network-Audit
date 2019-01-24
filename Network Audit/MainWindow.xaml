@@ -22,7 +22,7 @@
             This application returns network information in the table below.
         </TextBlock>
 
-        <Button Content="Run!" HorizontalAlignment="Left" Margin="20.333,187,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+        <Button Content="Run!" HorizontalAlignment="Left" Margin="20.333,187,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
 
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
@@ -38,5 +38,6 @@
                 <DataGridTextColumn Header="Devices on Network" Binding="{Binding NumDevices}" MinWidth="100"/>
             </DataGrid.Columns>
         </DataGrid>
+        <Button Content="Test # Devs" Grid.Column="2" HorizontalAlignment="Left" Margin="33.333,56,0,0" VerticalAlignment="Top" Width="75" Click="TestDevices"/>
     </Grid>
 </Window>

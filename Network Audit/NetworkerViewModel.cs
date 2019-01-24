@@ -15,7 +15,7 @@ namespace Network_Audit
             IP_Address = ObtainIPAddress();
             Connected = NetworkInterface.GetIsNetworkAvailable();
             InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
-            NumDevices = CalculateNumberDevices2(IP_Address);
+            CalculateNumberDevicesAsync(IP_Address);
             //System.Windows.MessageBox.Show(NumDevices.ToString());
         }
 
@@ -123,7 +123,7 @@ namespace Network_Audit
             }
         }
 
-        public int CalculateNumberDevices2(string ipAddress)
+        public int CalculateNumberDevices2(string ipAddress) //non-asynchronous
         {
             bool pingable;
             int numDevices = 0;
@@ -142,6 +142,40 @@ namespace Network_Audit
             }
 
             return numDevices;
+        }
+
+        static object lockObj = new object();
+
+        public async void CalculateNumberDevicesAsync(string ipAddress)
+        {
+            NumDevices = 0;
+
+            var tasks = new List<Task>();
+
+            for (int i = 1; i < 255; i++)
+            {
+                Ping pinger = new Ping();
+                string[] split_IP = ipAddress.Split('.');
+                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
+                var task = CalculateNumberDevicesTask(pinger, addressToPing);
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks)
+                .ContinueWith(t => { System.Windows.MessageBox.Show(NumDevices.ToString()); });
+        }
+
+        private async Task CalculateNumberDevicesTask(Ping pinger, string ip_Address)
+        {
+            var reply = await pinger.SendPingAsync(ip_Address, 100);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                lock(lockObj)
+                {
+                    NumDevices++;
+                }
+            }
         }
 
         public string IP_Address

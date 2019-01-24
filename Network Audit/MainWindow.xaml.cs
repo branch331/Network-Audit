@@ -28,9 +28,14 @@ namespace Network_Audit
             this.DataContext = obj;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void RunButton(object sender, RoutedEventArgs e)
         {
             obj.StartAudit();
+        }
+
+        private void TestDevices(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Total # Devices: " + obj.NetworkResources[0].NumDevices.ToString());
         }
     }
 }

@@ -30,6 +30,10 @@ namespace Network_Audit
             NetworkResources = new List<NetworkerViewModel> { };
             NetworkerViewModel myobj = new NetworkerViewModel();
             NetworkResources.Add(myobj);
+
+            System.Threading.Thread.Sleep(500);
+            NotifyPropertyChanged("NetworkResources");
+            
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)
