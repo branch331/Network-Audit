@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
+using System.Threading;
 
 namespace Network_Audit
 {
@@ -13,8 +14,9 @@ namespace Network_Audit
         {
             IP_Address = ObtainIPAddress();
             Connected = NetworkInterface.GetIsNetworkAvailable();
-            InternetSpeed = 5;
-            Num_devices = NetworkInterface.GetAllNetworkInterfaces().Length; //Not the correct call
+            InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
+            NumDevices = CalculateNumberDevices2(IP_Address);
+            //System.Windows.MessageBox.Show(NumDevices.ToString());
         }
 
         public string ObtainIPAddress()
@@ -35,17 +37,111 @@ namespace Network_Audit
             return ip_Address;
         }
 
-        public double CalculateInternetSpeed()
+        public Tuple<bool, double> PingAddress(string address, int packetSize) //return if address is pingable, and the time (ms) to receive a response
         {
-            double internetSpeed = 5;
-            return internetSpeed;
+            bool pingSuccess = false;
+            double responseTime = 0;
+            byte[] packet = new byte[packetSize]; 
+
+            Ping pinger = new Ping();
+
+            try
+            {
+                PingReply reply = pinger.Send(address, 50, packet); //Ping address with 15 ms timeout
+                if (reply.Status == IPStatus.Success)
+                {
+                    pingSuccess = true;
+                    responseTime = reply.RoundtripTime; 
+                }
+            }
+            catch (PingException) 
+            {
+
+            }
+            finally
+            {
+                if (pinger != null)
+                {
+                    pinger.Dispose();
+                }
+            }
+
+            return Tuple.Create(pingSuccess, responseTime);
+        }
+        
+        public void PingAddressAsync(string address, int packetSize)
+        {
+            byte[] packet = new byte[packetSize];
+            AutoResetEvent waiter = new AutoResetEvent(false);
+
+            Ping pinger = new Ping();
+            pinger.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
+
+            PingOptions options = new PingOptions(64, true);
+
+            pinger.SendAsync(address, 100, packet, options, waiter);
         }
 
-        public double CalculateNumberDevices()
+        private void PingCompletedCallback(object sender, PingCompletedEventArgs e)
         {
+            PingReply reply = e.Reply;
 
-            double num_devices = 5;
-            return num_devices;
+            PingCounter += 1;
+
+            if (reply.Status == IPStatus.Success)
+            {
+                NumDevices += 1;
+            } 
+
+            ((AutoResetEvent)e.UserState).Set();
+        }
+        
+        public double CalculateInternetSpeed()
+        {
+            double responseTimeSum = 0; //Sum of all internet speed responses in ms
+            int packetSize = 10; 
+
+            for (int i = 0; i < 4; i++)
+            {
+                responseTimeSum += PingAddress("www.google.com", packetSize).Item2;              
+            }  
+            return 1000*packetSize / (responseTimeSum/4); //return the average internet speed
+        }
+
+        System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+        
+        public void CalculateNumberDevices(string ip_Address)
+        {
+            //bool pingable;
+            string[] split_IP = ip_Address.Split('.');
+
+            for (int i = 1; i < 255; i++)
+            {
+                //Assumes subnet mask of 255.255.255.0
+                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
+                PingAddressAsync(addressToPing, 1);
+            }
+        }
+
+        public int CalculateNumberDevices2(string ipAddress)
+        {
+            bool pingable;
+            int numDevices = 0;
+            string[] split_IP = ipAddress.Split('.');
+
+            for (int i = 1; i < 255; i++)
+            {
+                //Assumes subnet mask of 255.255.255.0
+                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
+                pingable = PingAddress(addressToPing, 1).Item1;
+                if (pingable)
+                {
+                    numDevices += 1;
+                    //System.Windows.MessageBox.Show(i.ToString());
+                }
+            }
+
+            return numDevices;
         }
 
         public string IP_Address
@@ -66,7 +162,13 @@ namespace Network_Audit
             private set;
         }
 
-        public double Num_devices
+        public int NumDevices
+        {
+            get;
+            private set;
+        }
+
+        public int PingCounter
         {
             get;
             private set;

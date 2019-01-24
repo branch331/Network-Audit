@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Network_Audit"
         mc:Ignorable="d"
-        Title="Network Information" Height="257" Width="458">
+        Title="Network Information" Height="254.333" Width="477.196">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -21,21 +21,21 @@
         <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Padding="10,50,20,50" Margin="0,0,0,-0.333">
             This application returns network information in the table below.
         </TextBlock>
-        
-        <Button Content="Run!" HorizontalAlignment="Left" Margin="14,191,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+
+        <Button Content="Run!" HorizontalAlignment="Left" Margin="20.333,187,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
 
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
-                  Width="425" 
-                  Margin="10,92,0,36.667" 
+                  Width="445" 
+                  Margin="10,92,0,38.667" 
                   Grid.ColumnSpan="3"
                   IsReadOnly="True"
                   ItemsSource="{Binding NetworkResources}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="IP Address" Binding="{Binding IP_Address}" MinWidth="100"/>
                 <DataGridTextColumn Header ="Connected?" Binding="{Binding Connected}" MinWidth="100"/>
-                <DataGridTextColumn Header="Internet Speed" Binding="{Binding InternetSpeed}" MinWidth="100"/>
-                <DataGridTextColumn Header="Devices on Network" Binding="{Binding Num_devices}" MinWidth="100"/>
+                <DataGridTextColumn Header="Internet Speed (MBps)" Binding="{Binding InternetSpeed}" MinWidth="100"/>
+                <DataGridTextColumn Header="Devices on Network" Binding="{Binding NumDevices}" MinWidth="100"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
