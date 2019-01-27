@@ -10,12 +10,17 @@ namespace Network_Audit
 {
     internal class NetworkerViewModel
     {
-        public NetworkerViewModel()
+        public NetworkerViewModel(int ipIteration)
         {
-            IP_Address = ObtainIPAddress();
+            IsOnNetwork = false;
+            LocalIPAddress = ObtainIPAddress();
+            RemoteIPAddress = GetRemoteIP(LocalIPAddress, ipIteration);
             Connected = NetworkInterface.GetIsNetworkAvailable();
             InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
-            CalculateNumberDevicesAsync(IP_Address);
+            if (IsOnNetwork = CheckOnNetwork2(RemoteIPAddress, ipIteration))
+            {
+                HostName = GetHostName(RemoteIPAddress);
+            }
             //System.Windows.MessageBox.Show(NumDevices.ToString());
         }
 
@@ -90,7 +95,7 @@ namespace Network_Audit
 
             if (reply.Status == IPStatus.Success)
             {
-                NumDevices += 1;
+                //NumDevices += 1;
             } 
 
             ((AutoResetEvent)e.UserState).Set();
@@ -145,7 +150,7 @@ namespace Network_Audit
         }
 
         static object lockObj = new object();
-
+        /*
         public async void CalculateNumberDevicesAsync(string ipAddress)
         {
             NumDevices = 0;
@@ -177,8 +182,78 @@ namespace Network_Audit
                 }
             }
         }
+        */
 
-        public string IP_Address
+        public string GetRemoteIP(string localIPAddress, int ipIteration)
+        {
+            string[] split_IP = localIPAddress.Split('.');
+            return split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + ipIteration;
+        }
+        
+        public async void CheckOnNetwork(string remoteIPAddress, int ipIteration) //ipIteration is a number from 1 - 255
+        {
+            var tasks = new List<Task>();
+
+            Ping pinger = new Ping();
+            var task = CheckOnNetworkTask(pinger, remoteIPAddress);
+            tasks.Add(task);
+
+            await Task.WhenAll(tasks)
+                .ContinueWith(t => { System.Windows.MessageBox.Show(IsOnNetwork.ToString()); });
+        }
+
+        private async Task CheckOnNetworkTask(Ping pinger, string ip_Address)
+        {
+            var reply = await pinger.SendPingAsync(ip_Address, 100);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                lock (lockObj)
+                {
+                    IsOnNetwork = true;
+                }
+            }
+        }
+
+        private bool CheckOnNetwork2(string ipAddress, int ipIteration) //Non-async method 
+        {
+            string[] split_IP = ipAddress.Split('.');
+            //Assumes subnet mask of 255.255.255.0
+            string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + ipIteration;
+            return PingAddress(addressToPing, 1).Item1;
+        }
+
+        public string GetHostName(string remoteIPAddress)
+        {
+            try
+            {
+                return System.Net.Dns.GetHostEntry(remoteIPAddress).HostName;
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                return "Unavailable";
+            }
+        }
+
+        public bool IsOnNetwork
+        {
+            get;
+            private set;
+        }
+
+        public string LocalIPAddress
+        {
+            get;
+            private set;
+        }
+
+        public string RemoteIPAddress
+        {
+            get;
+            private set;
+        }
+
+        public string HostName
         {
             get;
             private set;
@@ -191,12 +266,6 @@ namespace Network_Audit
         }
 
         public double InternetSpeed
-        {
-            get;
-            private set;
-        }
-
-        public int NumDevices
         {
             get;
             private set;

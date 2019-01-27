@@ -9,30 +9,68 @@ namespace Network_Audit
 {
     internal class NetworkerModel : INotifyPropertyChanged
     {
-        private List<NetworkerViewModel> networkResources;
+        //private IEnumerable<NetworkerViewModel> networkResources;
+        private List<NetworkerViewModel> allNetworkResources;
+        private bool canBeginNetworkAudit;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public List<NetworkerViewModel> NetworkResources //Make a public list to bind to the DataGrid ItemsSource
+        public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
-            get { return networkResources; }
+            get
+            {
+                if (AllNetworkResources == null)
+                {
+                    return Enumerable.Empty<NetworkerViewModel>();
+                }
+                return AllNetworkResources
+                    .Where(x => x.IsOnNetwork == true);
+            }
+        }
+
+        private List<NetworkerViewModel> AllNetworkResources
+        {
+            get { return allNetworkResources; }
             set
             {
-                if (networkResources != value)
+                if (allNetworkResources != value)
                 {
-                    networkResources = value;
-                    NotifyPropertyChanged("NetworkResources");
+                    allNetworkResources = value;
+                    NotifyPropertyChanged("ConnectedNetworkResources");
+                }
+            }
+
+        }
+
+        public bool CanBeginNetworkAudit
+        {
+            get { return canBeginNetworkAudit; }
+            set
+            {
+                if (canBeginNetworkAudit != value)
+                {
+                    canBeginNetworkAudit = value;
+                    NotifyPropertyChanged("CanBeginNetworkAudit");
                 }
             }
         }
 
         public void StartAudit()
         {
-            NetworkResources = new List<NetworkerViewModel> { };
-            NetworkerViewModel myobj = new NetworkerViewModel();
-            NetworkResources.Add(myobj);
-
+            AllNetworkResources = new List<NetworkerViewModel>();
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            for (int i = 2; i < 255; i++)
+            {
+                NetworkerViewModel myObj = new NetworkerViewModel(i);
+                AllNetworkResources.Add(myObj); //makes linq operation ("where isconnected") redundant
+            }
+            System.Windows.MessageBox.Show("Total Time Elapsed: " + timer.Elapsed.ToString());
             System.Threading.Thread.Sleep(500);
-            NotifyPropertyChanged("NetworkResources");
+
+            //ConnectedNetworkResources = AllNetworkResources
+              //  .Where(x => x.IsOnNetwork == true);
+
+            NotifyPropertyChanged("ConnectedNetworkResources");
             
         }
 

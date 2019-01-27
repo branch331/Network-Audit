@@ -33,9 +33,5 @@ namespace Network_Audit
             obj.StartAudit();
         }
 
-        private void TestDevices(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Total # Devices: " + obj.NetworkResources[0].NumDevices.ToString());
-        }
     }
 }
