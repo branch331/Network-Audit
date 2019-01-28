@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Windows;
 
 namespace Network_Audit
 {
@@ -12,6 +13,7 @@ namespace Network_Audit
         //private IEnumerable<NetworkerViewModel> networkResources;
         private List<NetworkerViewModel> allNetworkResources;
         private bool canBeginNetworkAudit;
+        private string localIPAddress;
         public event PropertyChangedEventHandler PropertyChanged;
         static object lockObj = new object();
 
@@ -54,41 +56,62 @@ namespace Network_Audit
                 }
             }
         }
-         
+
         public void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
-            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-            timer.Start();
-            for (int i = 2; i < 255; i++) //********** change back to 255
+
+            LocalMachineModel localobj = new LocalMachineModel();
+            localIPAddress = localobj.LocalIPAddress;
+
+            System.Diagnostics.Stopwatch timer2 = new System.Diagnostics.Stopwatch();
+            timer2.Start();
+            for (int i = 2; i < 255; i++)
             {
-                NetworkerViewModel myObj = new NetworkerViewModel(i);
+                NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
+                //string constructortime = timer2.Elapsed.ToString();
+                //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
                 AllNetworkResources.Add(myObj);
                 //System.Windows.MessageBox.Show(i.ToString());
             }
+            timer2.Start();
+
             CheckResourcesOnNetworkAsync(AllNetworkResources);
 
-            System.Windows.MessageBox.Show("Total Time Elapsed: " + timer.Elapsed.ToString());
-            System.Threading.Thread.Sleep(500);
+            foreach (NetworkerViewModel x in ConnectedNetworkResources) //***not running
+            {
+                x.GetHostName();
+                MessageBox.Show(x.HostName);
+            }
 
             NotifyPropertyChanged("ConnectedNetworkResources");
+
+            //System.Windows.MessageBox.Show("Total Time Elapsed: " + timer2.Elapsed.ToString());
         }
 
         public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
         {
             var tasks = new List<Task>();
 
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
             foreach (NetworkerViewModel x in networkResources)
             {
                 var task = CheckResourcesOnNetworkTask(x);
                 tasks.Add(task);
-                //await x.CheckIsOnNetworkTask();
-                //System.Windows.MessageBox.Show("Adding task: " + x.RemoteIPAddress);
             }
+            //System.Windows.MessageBox.Show("Time for adding to task list: " + timer.Elapsed.ToString());
             await Task
                .WhenAll(tasks)
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
-        }
+
+            //foreach(NetworkerViewModel y in ConnectedNetworkResources)
+            //{
+            //    y.GetHostName();
+            //}
+
+            NotifyPropertyChanged("ConnectedNetworkResources");
+    }
 
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
         {
