@@ -60,7 +60,7 @@ namespace Network_Audit
             AllNetworkResources = new List<NetworkerViewModel>();
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            for (int i = 2; i < 25; i++) //********** change back to 255
+            for (int i = 2; i < 255; i++) //********** change back to 255
             {
                 NetworkerViewModel myObj = new NetworkerViewModel(i);
                 AllNetworkResources.Add(myObj);
@@ -82,11 +82,12 @@ namespace Network_Audit
             {
                 var task = CheckResourcesOnNetworkTask(x);
                 tasks.Add(task);
+                //await x.CheckIsOnNetworkTask();
                 //System.Windows.MessageBox.Show("Adding task: " + x.RemoteIPAddress);
             }
             await Task
-                .WhenAll(tasks)
-                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
+               .WhenAll(tasks)
+               .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
         }
 
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
