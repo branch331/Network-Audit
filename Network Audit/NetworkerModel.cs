@@ -54,43 +54,44 @@ namespace Network_Audit
                 }
             }
         }
-
+         
         public void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            for (int i = 2; i < 255; i++)
+            for (int i = 2; i < 25; i++) //********** change back to 255
             {
                 NetworkerViewModel myObj = new NetworkerViewModel(i);
-                AllNetworkResources.Add(myObj); 
+                AllNetworkResources.Add(myObj);
+                //System.Windows.MessageBox.Show(i.ToString());
             }
+            CheckResourcesOnNetworkAsync(AllNetworkResources);
+
             System.Windows.MessageBox.Show("Total Time Elapsed: " + timer.Elapsed.ToString());
             System.Threading.Thread.Sleep(500);
-
-            //ConnectedNetworkResources = AllNetworkResources
-              //  .Where(x => x.IsOnNetwork == true);
 
             NotifyPropertyChanged("ConnectedNetworkResources");
         }
 
-        public void CreateNetworkerObjectAsync()
+        public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
         {
-            AllNetworkResources = new List<NetworkerViewModel>();
+            var tasks = new List<Task>();
 
-            for (int i = 1; i < 255; i++)
+            foreach (NetworkerViewModel x in networkResources)
             {
-                NetworkerViewModel myObj = new NetworkerViewModel(i);
-                System.Threading.Thread.Sleep(50);
-                AllNetworkResources.Add(myObj);
-                if (i%10 == 0)
-                {
-                    System.Windows.MessageBox.Show(i.ToString());
-                }
+                var task = CheckResourcesOnNetworkTask(x);
+                tasks.Add(task);
+                //System.Windows.MessageBox.Show("Adding task: " + x.RemoteIPAddress);
             }
+            await Task
+                .WhenAll(tasks)
+                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
+        }
 
-            //await Task.WhenAll(tasks)
-              //  .ContinueWith(t => { System.Windows.MessageBox.Show(NumDevices.ToString()); });
+        private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
+        {
+            await model.CheckIsOnNetworkTask();
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)

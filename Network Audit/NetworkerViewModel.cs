@@ -15,20 +15,21 @@ namespace Network_Audit
             IsOnNetwork = false;
             LocalIPAddress = ObtainIPAddress();
             RemoteIPAddress = GetRemoteIP(LocalIPAddress, ipIteration);
+
             Connected = NetworkInterface.GetIsNetworkAvailable();
             InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
             //if (IsOnNetwork = CheckIsOnNetwork2(RemoteIPAddress, ipIteration))
             //{
 
             //}
-            CheckIsOnNetworkAsync();
-            HostName = GetHostName(RemoteIPAddress);
+            //HostName = GetHostName(RemoteIPAddress); //***CAUSING HANG.
+            HostName = "test name"; //***
+            
         }
 
         public async void CheckIsOnNetworkAsync()
         {
-            await CheckIsOnNetworkTask(RemoteIPAddress);
-            HostName = GetHostName(RemoteIPAddress);
+            await CheckIsOnNetworkTask();
             //System.Windows.MessageBox.Show(NumDevices.ToString());
         }
         /*
@@ -92,13 +93,13 @@ private async Task CalculateNumberDevicesTask(Ping pinger, string ip_Address)
                 }
             }
 */
-        public async Task CheckIsOnNetworkTask(string remoteIPAddress)
+        public async Task CheckIsOnNetworkTask()
         {
             Ping pinger = new Ping();
 
             //await PingAddress(remoteIPAddress, 1);
 
-            var reply = await pinger.SendPingAsync(remoteIPAddress, 100);
+            var reply = await pinger.SendPingAsync(RemoteIPAddress, 100);
 
             lock(lockObj)
             {
