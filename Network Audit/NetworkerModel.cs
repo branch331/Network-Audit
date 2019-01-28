@@ -13,6 +13,7 @@ namespace Network_Audit
         private List<NetworkerViewModel> allNetworkResources;
         private bool canBeginNetworkAudit;
         public event PropertyChangedEventHandler PropertyChanged;
+        static object lockObj = new object();
 
         public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
@@ -62,7 +63,7 @@ namespace Network_Audit
             for (int i = 2; i < 255; i++)
             {
                 NetworkerViewModel myObj = new NetworkerViewModel(i);
-                AllNetworkResources.Add(myObj); //makes linq operation ("where isconnected") redundant
+                AllNetworkResources.Add(myObj); 
             }
             System.Windows.MessageBox.Show("Total Time Elapsed: " + timer.Elapsed.ToString());
             System.Threading.Thread.Sleep(500);
@@ -71,7 +72,25 @@ namespace Network_Audit
               //  .Where(x => x.IsOnNetwork == true);
 
             NotifyPropertyChanged("ConnectedNetworkResources");
-            
+        }
+
+        public void CreateNetworkerObjectAsync()
+        {
+            AllNetworkResources = new List<NetworkerViewModel>();
+
+            for (int i = 1; i < 255; i++)
+            {
+                NetworkerViewModel myObj = new NetworkerViewModel(i);
+                System.Threading.Thread.Sleep(50);
+                AllNetworkResources.Add(myObj);
+                if (i%10 == 0)
+                {
+                    System.Windows.MessageBox.Show(i.ToString());
+                }
+            }
+
+            //await Task.WhenAll(tasks)
+              //  .ContinueWith(t => { System.Windows.MessageBox.Show(NumDevices.ToString()); });
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)
