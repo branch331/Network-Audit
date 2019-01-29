@@ -66,7 +66,7 @@ namespace Network_Audit
 
             System.Diagnostics.Stopwatch timer2 = new System.Diagnostics.Stopwatch();
             timer2.Start();
-            for (int i = 2; i < 255; i++)
+            for (int i = 2; i < 255; i++) //***
             {
                 NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
                 //string constructortime = timer2.Elapsed.ToString();
@@ -74,19 +74,43 @@ namespace Network_Audit
                 AllNetworkResources.Add(myObj);
                 //System.Windows.MessageBox.Show(i.ToString());
             }
-            timer2.Start();
+
 
             CheckResourcesOnNetworkAsync(AllNetworkResources);
+            //MessageBox.Show("Total time elapsed: " + timer2.Elapsed.TotalSeconds.ToString());
 
-            foreach (NetworkerViewModel x in ConnectedNetworkResources) //***not running
+            /*foreach (NetworkerViewModel x in AllNetworkResources) //***not running; Connectednetworkresources is null
             {
-                x.GetHostName();
-                MessageBox.Show(x.HostName);
+                if (x.IsOnNetwork)
+                {
+                    x.GetHostName();
+                    MessageBox.Show("Changing name");
+                }
+                //MessageBox.Show(x.HostName);
             }
+            */
+            /*
+            for (int i = 0; i < AllNetworkResources.Count; i++)
+            {
+                if (AllNetworkResources[i].IsOnNetwork)
+                {
+                    //AllNetworkResources[i].GetHostName();
+                    //MessageBox.Show(AllNetworkResources[i].HostName);
+                    MessageBox.Show("test");
+                }
+            }
+            */
+            //NotifyPropertyChanged("ConnectedNetworkResources");
 
-            NotifyPropertyChanged("ConnectedNetworkResources");
 
-            //System.Windows.MessageBox.Show("Total Time Elapsed: " + timer2.Elapsed.ToString());
+            //foreach (NetworkerViewModel x in AllNetworkResources)
+            //{
+            //x.GetHostName();
+            //}
+
+
+            //NotifyPropertyChanged("ConnectedNetworkResources");
+
         }
 
         public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
@@ -116,6 +140,10 @@ namespace Network_Audit
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
         {
             await model.CheckIsOnNetworkTask();
+            if (model.IsOnNetwork)
+            {
+                model.GetHostName();
+            }
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)

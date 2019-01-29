@@ -60,9 +60,7 @@ namespace Network_Audit
 
             //}
             //HostName = GetHostName(RemoteIPAddress); //***CAUSING HANG.
-            HostName = "test name"; //***
-            //HostName = GetHostName();
-            
+            //HostName = "test name"; //***    
         }
 
         public async void CheckIsOnNetworkAsync()
@@ -171,16 +169,23 @@ namespace Network_Audit
             return PingAddress(addressToPing, 1).Item1;
         }
 
-        public string GetHostName()
+        public void GetHostName()
         {
-            try
-            {
-                return System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
-            }
-            catch (System.Net.Sockets.SocketException)
-            {
-                return "Unavailable";
-            }
+            //if (IsOnNetwork)
+            //{
+                try
+                {
+                    HostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
+                }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    HostName = "Unavailable";
+                }
+            //}
+            //else
+            //{
+              //  HostName = "Unavailable";
+            //}
         }
 
         public bool IsOnNetwork
