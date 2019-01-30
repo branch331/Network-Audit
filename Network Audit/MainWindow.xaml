@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Network_Audit"
         mc:Ignorable="d"
-        Title="Network Information" Height="254.333" Width="477.196">
+        Title="Network Information" Height="409.667" Width="412.196">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -14,30 +14,34 @@
             <ColumnDefinition Width="185*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="30" Margin="0,0,0,-0.333">
+        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="20" Margin="0,0,0,-0.333">
             Network Information
         </TextBlock>
 
-        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Padding="10,50,20,50" Margin="0,0,0,-0.333">
-            This application returns network information in the table below.
-        </TextBlock>
+        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table "/><Run Text="below."/></TextBlock>
 
-        <Button Content="Run!" HorizontalAlignment="Left" Margin="20.333,187,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+        <Button Content="Run!" HorizontalAlignment="Left" Margin="9.333,338,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+
+        <!--
+        <Button Content="Stop" HorizontalAlignment="Left" Margin="19.333,186,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+        <CheckBox Content="Connected?" HorizontalAlignment="Left" Margin="236,70,0,0" VerticalAlignment="Top" Checked="{Binding Connected}"/>
+        <Label Content="InternetSpeed" HorizontalAlignment="Left" Margin="0.333,28,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+        <TextBox Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="0.333,59,0,0" TextWrapping="Wrap" Text="{Binding InternetSpeed}" VerticalAlignment="Top" Width="53"/>
+        <Label Content="MBps" Grid.Column="2" HorizontalAlignment="Left" Margin="52.333,55,0,0" VerticalAlignment="Top" Height="32"/>
+        -->
 
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
-                  Width="445" 
-                  Margin="10,92,0,38.667" 
+                  Width="385" 
+                  Margin="10,92,0,42.667" 
                   Grid.ColumnSpan="3"
                   IsReadOnly="True"
-                  ItemsSource="{Binding NetworkResources}">
+                  ItemsSource="{Binding ConnectedNetworkResources}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="IP Address" Binding="{Binding IP_Address}" MinWidth="100"/>
-                <DataGridTextColumn Header ="Connected?" Binding="{Binding Connected}" MinWidth="100"/>
-                <DataGridTextColumn Header="Internet Speed (MBps)" Binding="{Binding InternetSpeed}" MinWidth="100"/>
-                <DataGridTextColumn Header="Devices on Network" Binding="{Binding NumDevices}" MinWidth="100"/>
+                <DataGridTextColumn Header="IP Address" Binding="{Binding RemoteIPAddress}" MinWidth="100"/>
+                <DataGridTextColumn Header="HostName" Binding="{Binding HostName}" MinWidth="100"/>
+                <DataGridTextColumn Header="Ping Response (ms)" Binding="{Binding PingResponseTime}" MinWidth="25"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Content="Test # Devs" Grid.Column="2" HorizontalAlignment="Left" Margin="33.333,56,0,0" VerticalAlignment="Top" Width="75" Click="TestDevices"/>
     </Grid>
 </Window>

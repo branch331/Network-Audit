@@ -8,16 +8,13 @@ using System.Threading;
 
 namespace Network_Audit
 {
-    internal class NetworkerViewModel
+    internal class LocalMachineModel
     {
-        public NetworkerViewModel()
+        public LocalMachineModel()
         {
-            IP_Address = ObtainIPAddress();
-            Connected = NetworkInterface.GetIsNetworkAvailable();
-            InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
-            CalculateNumberDevicesAsync(IP_Address);
-            //System.Windows.MessageBox.Show(NumDevices.ToString());
+            LocalIPAddress = ObtainIPAddress();
         }
+
 
         public string ObtainIPAddress()
         {
@@ -27,7 +24,7 @@ namespace Network_Audit
             {
                 if (x.OperationalStatus == OperationalStatus.Up)
                 {
-                    foreach(GatewayIPAddressInformation y in x.GetIPProperties().GatewayAddresses)
+                    foreach (GatewayIPAddressInformation y in x.GetIPProperties().GatewayAddresses)
                     {
                         ip_Address = y.Address.ToString();
                     }
@@ -35,6 +32,50 @@ namespace Network_Audit
             }
 
             return ip_Address;
+        }
+
+        public string LocalIPAddress
+        {
+            get;
+            private set;
+        }
+    }
+
+    internal class NetworkerViewModel
+    {
+        public NetworkerViewModel(string localIPAddress, int ipIteration)
+        {
+            IsOnNetwork = false;
+            //LocalIPAddress = ObtainIPAddress();
+            RemoteIPAddress = GetRemoteIP(localIPAddress, ipIteration);
+
+            //Connected = NetworkInterface.GetIsNetworkAvailable();
+            //InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
+
+            Connected = true;
+            InternetSpeed = 555;
+            PingResponseTime = 0;
+        }
+
+        public async void CheckIsOnNetworkAsync()
+        {
+            await CheckIsOnNetworkTask();
+        }
+
+        public async Task CheckIsOnNetworkTask()
+        {
+            Ping pinger = new Ping();
+
+            var reply = await pinger.SendPingAsync(RemoteIPAddress, 200);
+
+            lock(lockObj)
+            {
+                if (reply.Status == IPStatus.Success)
+                {
+                    IsOnNetwork = true;
+                    PingResponseTime = reply.RoundtripTime;
+                }
+            }
         }
 
         public Tuple<bool, double> PingAddress(string address, int packetSize) //return if address is pingable, and the time (ms) to receive a response
@@ -69,33 +110,6 @@ namespace Network_Audit
             return Tuple.Create(pingSuccess, responseTime);
         }
         
-        public void PingAddressAsync(string address, int packetSize)
-        {
-            byte[] packet = new byte[packetSize];
-            AutoResetEvent waiter = new AutoResetEvent(false);
-
-            Ping pinger = new Ping();
-            pinger.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
-
-            PingOptions options = new PingOptions(64, true);
-
-            pinger.SendAsync(address, 100, packet, options, waiter);
-        }
-
-        private void PingCompletedCallback(object sender, PingCompletedEventArgs e)
-        {
-            PingReply reply = e.Reply;
-
-            PingCounter += 1;
-
-            if (reply.Status == IPStatus.Success)
-            {
-                NumDevices += 1;
-            } 
-
-            ((AutoResetEvent)e.UserState).Set();
-        }
-        
         public double CalculateInternetSpeed()
         {
             double responseTimeSum = 0; //Sum of all internet speed responses in ms
@@ -108,77 +122,45 @@ namespace Network_Audit
             return 1000*packetSize / (responseTimeSum/4); //return the average internet speed
         }
 
-        System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-        
-        public void CalculateNumberDevices(string ip_Address)
-        {
-            //bool pingable;
-            string[] split_IP = ip_Address.Split('.');
-
-            for (int i = 1; i < 255; i++)
-            {
-                //Assumes subnet mask of 255.255.255.0
-                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
-                PingAddressAsync(addressToPing, 1);
-            }
-        }
-
-        public int CalculateNumberDevices2(string ipAddress) //non-asynchronous
-        {
-            bool pingable;
-            int numDevices = 0;
-            string[] split_IP = ipAddress.Split('.');
-
-            for (int i = 1; i < 255; i++)
-            {
-                //Assumes subnet mask of 255.255.255.0
-                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
-                pingable = PingAddress(addressToPing, 1).Item1;
-                if (pingable)
-                {
-                    numDevices += 1;
-                    //System.Windows.MessageBox.Show(i.ToString());
-                }
-            }
-
-            return numDevices;
-        }
-
         static object lockObj = new object();
 
-        public async void CalculateNumberDevicesAsync(string ipAddress)
+        public string GetRemoteIP(string localIPAddress, int ipIteration)
         {
-            NumDevices = 0;
-
-            var tasks = new List<Task>();
-
-            for (int i = 1; i < 255; i++)
-            {
-                Ping pinger = new Ping();
-                string[] split_IP = ipAddress.Split('.');
-                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
-                var task = CalculateNumberDevicesTask(pinger, addressToPing);
-                tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks)
-                .ContinueWith(t => { System.Windows.MessageBox.Show(NumDevices.ToString()); });
+            string[] split_IP = localIPAddress.Split('.');
+            return split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + ipIteration;
         }
 
-        private async Task CalculateNumberDevicesTask(Ping pinger, string ip_Address)
+        public void GetHostName()
         {
-            var reply = await pinger.SendPingAsync(ip_Address, 100);
-
-            if (reply.Status == IPStatus.Success)
+            try
             {
-                lock(lockObj)
-                {
-                    NumDevices++;
-                }
+                HostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                HostName = "Unavailable";
             }
         }
 
-        public string IP_Address
+        public bool IsOnNetwork
+        {
+            get;
+            private set;
+        }
+
+        public double PingResponseTime
+        {
+            get;
+            private set;
+        }
+
+        public string RemoteIPAddress
+        {
+            get;
+            private set;
+        }
+
+        public string HostName
         {
             get;
             private set;
@@ -191,12 +173,6 @@ namespace Network_Audit
         }
 
         public double InternetSpeed
-        {
-            get;
-            private set;
-        }
-
-        public int NumDevices
         {
             get;
             private set;
