@@ -10,7 +10,6 @@ namespace Network_Audit
 {
     internal class NetworkerModel : INotifyPropertyChanged
     {
-        //private IEnumerable<NetworkerViewModel> networkResources;
         private List<NetworkerViewModel> allNetworkResources;
         private bool canBeginNetworkAudit;
         private string localIPAddress;
@@ -64,75 +63,29 @@ namespace Network_Audit
             LocalMachineModel localobj = new LocalMachineModel();
             localIPAddress = localobj.LocalIPAddress;
 
-            System.Diagnostics.Stopwatch timer2 = new System.Diagnostics.Stopwatch();
-            timer2.Start();
-            for (int i = 2; i < 255; i++) //***
+            for (int i = 0; i < 255; i++) //***
             {
                 NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
-                //string constructortime = timer2.Elapsed.ToString();
-                //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
                 AllNetworkResources.Add(myObj);
-                //System.Windows.MessageBox.Show(i.ToString());
             }
-
 
             CheckResourcesOnNetworkAsync(AllNetworkResources);
-            //MessageBox.Show("Total time elapsed: " + timer2.Elapsed.TotalSeconds.ToString());
-
-            /*foreach (NetworkerViewModel x in AllNetworkResources) //***not running; Connectednetworkresources is null
-            {
-                if (x.IsOnNetwork)
-                {
-                    x.GetHostName();
-                    MessageBox.Show("Changing name");
-                }
-                //MessageBox.Show(x.HostName);
-            }
-            */
-            /*
-            for (int i = 0; i < AllNetworkResources.Count; i++)
-            {
-                if (AllNetworkResources[i].IsOnNetwork)
-                {
-                    //AllNetworkResources[i].GetHostName();
-                    //MessageBox.Show(AllNetworkResources[i].HostName);
-                    MessageBox.Show("test");
-                }
-            }
-            */
-            //NotifyPropertyChanged("ConnectedNetworkResources");
-
-
-            //foreach (NetworkerViewModel x in AllNetworkResources)
-            //{
-            //x.GetHostName();
-            //}
-
-
-            //NotifyPropertyChanged("ConnectedNetworkResources");
-
+            MessageBox.Show("Scan Complete!");
         }
 
         public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
         {
             var tasks = new List<Task>();
 
-            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-            timer.Start();
             foreach (NetworkerViewModel x in networkResources)
             {
                 var task = CheckResourcesOnNetworkTask(x);
                 tasks.Add(task);
             }
-            //System.Windows.MessageBox.Show("Time for adding to task list: " + timer.Elapsed.ToString());
+
             await Task
                .WhenAll(tasks)
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
-
-            //foreach(NetworkerViewModel y in ConnectedNetworkResources)
-            //{
-            //    y.GetHostName();
-            //}
 
             NotifyPropertyChanged("ConnectedNetworkResources");
     }

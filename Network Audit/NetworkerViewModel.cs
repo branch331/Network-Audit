@@ -54,26 +54,17 @@ namespace Network_Audit
 
             Connected = true;
             InternetSpeed = 555;
-
-            //if (IsOnNetwork = CheckIsOnNetwork2(RemoteIPAddress, ipIteration))
-            //{
-
-            //}
-            //HostName = GetHostName(RemoteIPAddress); //***CAUSING HANG.
-            //HostName = "test name"; //***    
+            PingResponseTime = 0;
         }
 
         public async void CheckIsOnNetworkAsync()
         {
             await CheckIsOnNetworkTask();
-            //System.Windows.MessageBox.Show(NumDevices.ToString());
         }
 
         public async Task CheckIsOnNetworkTask()
         {
             Ping pinger = new Ping();
-
-            //await PingAddress(remoteIPAddress, 1);
 
             var reply = await pinger.SendPingAsync(RemoteIPAddress, 200);
 
@@ -82,6 +73,7 @@ namespace Network_Audit
                 if (reply.Status == IPStatus.Success)
                 {
                     IsOnNetwork = true;
+                    PingResponseTime = reply.RoundtripTime;
                 }
             }
         }
@@ -130,29 +122,6 @@ namespace Network_Audit
             return 1000*packetSize / (responseTimeSum/4); //return the average internet speed
         }
 
-        System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-
-        public int CalculateNumberDevices2(string ipAddress) //non-asynchronous
-        {
-            bool pingable;
-            int numDevices = 0;
-            string[] split_IP = ipAddress.Split('.');
-
-            for (int i = 1; i < 255; i++)
-            {
-                //Assumes subnet mask of 255.255.255.0
-                string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + i;
-                pingable = PingAddress(addressToPing, 1).Item1;
-                if (pingable)
-                {
-                    numDevices += 1;
-                    //System.Windows.MessageBox.Show(i.ToString());
-                }
-            }
-
-            return numDevices;
-        }
-
         static object lockObj = new object();
 
         public string GetRemoteIP(string localIPAddress, int ipIteration)
@@ -160,35 +129,26 @@ namespace Network_Audit
             string[] split_IP = localIPAddress.Split('.');
             return split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + ipIteration;
         }
-       
-        private bool CheckIsOnNetwork2(string ipAddress, int ipIteration) //Non-async method 
-        {
-            string[] split_IP = ipAddress.Split('.');
-            //Assumes subnet mask of 255.255.255.0
-            string addressToPing = split_IP[0] + "." + split_IP[1] + "." + split_IP[2] + "." + ipIteration;
-            return PingAddress(addressToPing, 1).Item1;
-        }
 
         public void GetHostName()
         {
-            //if (IsOnNetwork)
-            //{
-                try
-                {
-                    HostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
-                }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    HostName = "Unavailable";
-                }
-            //}
-            //else
-            //{
-              //  HostName = "Unavailable";
-            //}
+            try
+            {
+                HostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                HostName = "Unavailable";
+            }
         }
 
         public bool IsOnNetwork
+        {
+            get;
+            private set;
+        }
+
+        public double PingResponseTime
         {
             get;
             private set;

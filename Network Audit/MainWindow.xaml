@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Network_Audit"
         mc:Ignorable="d"
-        Title="Network Information" Height="429.667" Width="481.196">
+        Title="Network Information" Height="409.667" Width="412.196">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -14,13 +14,13 @@
             <ColumnDefinition Width="185*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="30" Margin="0,0,0,-0.333">
+        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="20" Margin="0,0,0,-0.333">
             Network Information
         </TextBlock>
 
-        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Padding="10,50,20,50" Margin="0,0,0,-0.333"><Run Text="This application returns network information in the table "/><Run Text="below."/></TextBlock>
+        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table "/><Run Text="below."/></TextBlock>
 
-        <Button Content="Run!" HorizontalAlignment="Left" Margin="22.667,361,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
+        <Button Content="Run!" HorizontalAlignment="Left" Margin="9.333,338,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
 
         <!--
         <Button Content="Stop" HorizontalAlignment="Left" Margin="19.333,186,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117" Grid.Column="2"/>
@@ -32,14 +32,15 @@
 
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
-                  Width="445" 
-                  Margin="10,92,0,38.667" 
+                  Width="385" 
+                  Margin="10,92,0,42.667" 
                   Grid.ColumnSpan="3"
                   IsReadOnly="True"
                   ItemsSource="{Binding ConnectedNetworkResources}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="IP Address" Binding="{Binding RemoteIPAddress}" MinWidth="100"/>
                 <DataGridTextColumn Header="HostName" Binding="{Binding HostName}" MinWidth="100"/>
+                <DataGridTextColumn Header="Ping Response (ms)" Binding="{Binding PingResponseTime}" MinWidth="25"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
