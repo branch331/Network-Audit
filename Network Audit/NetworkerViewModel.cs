@@ -13,8 +13,8 @@ namespace Network_Audit
         public LocalMachineModel()
         {
             LocalIPAddress = ObtainIPAddress();
+            Connected = NetworkInterface.GetIsNetworkAvailable();
         }
-
 
         public string ObtainIPAddress()
         {
@@ -34,7 +34,31 @@ namespace Network_Audit
             return ip_Address;
         }
 
+        public double CalculateInternetSpeed()
+        {
+            double responseTimeSum = 0; //Sum of all internet speed responses in ms
+            int packetSize = 10;
+
+            for (int i = 0; i < 4; i++)
+            {
+                //responseTimeSum += PingAddress("www.google.com", packetSize).Item2;
+            }
+            return 1000 * packetSize / (responseTimeSum / 4); //return the average internet speed
+        }
+
         public string LocalIPAddress
+        {
+            get;
+            private set;
+        }
+
+        public bool Connected
+        {
+            get;
+            private set;
+        }
+
+        public double InternetSpeed
         {
             get;
             private set;
@@ -49,11 +73,7 @@ namespace Network_Audit
             //LocalIPAddress = ObtainIPAddress();
             RemoteIPAddress = GetRemoteIP(localIPAddress, ipIteration);
 
-            //Connected = NetworkInterface.GetIsNetworkAvailable();
             //InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
-
-            Connected = true;
-            InternetSpeed = 555;
             PingResponseTime = 0;
         }
 
@@ -109,18 +129,6 @@ namespace Network_Audit
 
             return Tuple.Create(pingSuccess, responseTime);
         }
-        
-        public double CalculateInternetSpeed()
-        {
-            double responseTimeSum = 0; //Sum of all internet speed responses in ms
-            int packetSize = 10; 
-
-            for (int i = 0; i < 4; i++)
-            {
-                responseTimeSum += PingAddress("www.google.com", packetSize).Item2;              
-            }  
-            return 1000*packetSize / (responseTimeSum/4); //return the average internet speed
-        }
 
         static object lockObj = new object();
 
@@ -161,18 +169,6 @@ namespace Network_Audit
         }
 
         public string HostName
-        {
-            get;
-            private set;
-        }
-
-        public bool Connected
-        {
-            get;
-            private set;
-        }
-
-        public double InternetSpeed
         {
             get;
             private set;

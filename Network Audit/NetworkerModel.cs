@@ -13,6 +13,7 @@ namespace Network_Audit
         private List<NetworkerViewModel> allNetworkResources;
         private bool canBeginNetworkAudit;
         private string localIPAddress;
+        private string connectedColor;
         public event PropertyChangedEventHandler PropertyChanged;
         static object lockObj = new object();
 
@@ -56,21 +57,57 @@ namespace Network_Audit
             }
         }
 
+        public string ConnectedColor
+        {
+            get { return connectedColor; }
+            set
+            {
+                if (connectedColor != value)
+                {
+                    connectedColor = value;
+                    NotifyPropertyChanged("ConnectedColor");
+                }
+            }
+        }
+
         public void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
+            bool connected;
 
             LocalMachineModel localobj = new LocalMachineModel();
             localIPAddress = localobj.LocalIPAddress;
+            connected = localobj.Connected;
 
-            for (int i = 0; i < 255; i++) //***
+            CheckConnectionColor(connected);
+
+            if (connected)
             {
-                NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
-                AllNetworkResources.Add(myObj);
-            }
+                for (int i = 0; i < 255; i++) 
+                {
+                    NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
+                    AllNetworkResources.Add(myObj);
+                }
 
-            CheckResourcesOnNetworkAsync(AllNetworkResources);
-            MessageBox.Show("Scan Complete!");
+                CheckResourcesOnNetworkAsync(AllNetworkResources);
+                MessageBox.Show("Scan Complete!");
+            }
+            else
+            {
+                MessageBox.Show("Unable to scan. Network is unavailable.");
+            }
+        }
+
+        public void CheckConnectionColor(bool connected)
+        {
+            if (connected)
+            {
+                ConnectedColor = "#40FF00"; //green
+            }
+            else
+            {
+                ConnectedColor = "#FF0000"; //red
+            }
         }
 
         public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
