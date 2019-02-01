@@ -36,14 +36,15 @@ namespace Network_Audit
 
         public double CalculateInternetSpeed()
         {
-            double responseTimeSum = 0; //Sum of all internet speed responses in ms
-            int packetSize = 10;
+            System.Net.WebClient webclient = new System.Net.WebClient();
 
-            for (int i = 0; i < 4; i++)
-            {
-                //responseTimeSum += PingAddress("www.google.com", packetSize).Item2;
-            }
-            return 1000 * packetSize / (responseTimeSum / 4); //return the average internet speed
+            DateTime t1 = DateTime.Now;
+
+            byte[] data = webclient.DownloadData("www.google.com");
+
+            DateTime t2 = DateTime.Now;
+
+            return ((data.Length / 1024) / (t2 - t1).TotalSeconds);
         }
 
         public string LocalIPAddress
