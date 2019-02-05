@@ -14,7 +14,7 @@ namespace Network_Audit
         private bool canBeginNetworkAudit;
         private string connectedColor;
         private string internetSpeed;
-        private double scanProgress;
+        private int scanProgress = 0;
         private double scansRemaining = 255;
         public event PropertyChangedEventHandler PropertyChanged;
         static object lockObj = new object();
@@ -85,7 +85,7 @@ namespace Network_Audit
             }
         }
 
-        public double ScanProgress
+        public int ScanProgress
         {
             get { return scanProgress; }
             set
@@ -168,8 +168,8 @@ namespace Network_Audit
                 model.GetHostName();
             }
             scansRemaining -= 1;
-            ScanProgress = 255 / scansRemaining;
-            NotifyPropertyChanged("ScanProgress");
+            ScanProgress = Convert.ToInt32(Math.Round(((255- scansRemaining) / 255) * 100));
+            //NotifyPropertyChanged("ScanProgress");
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)
