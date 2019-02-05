@@ -12,8 +12,8 @@ namespace Network_Audit
     {
         private List<NetworkerViewModel> allNetworkResources;
         private bool canBeginNetworkAudit;
-        private string localIPAddress;
         private string connectedColor;
+        private string internetSpeed;
         public event PropertyChangedEventHandler PropertyChanged;
         static object lockObj = new object();
 
@@ -70,14 +70,29 @@ namespace Network_Audit
             }
         }
 
+        public string InternetSpeed
+        {
+            get { return internetSpeed; }
+            set
+            {
+                if (internetSpeed != value)
+                {
+                    internetSpeed = value;
+                    NotifyPropertyChanged("InternetSpeed");
+                }
+            }
+        }
+
         public void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
+            string localIPAddress;
             bool connected;
 
-            LocalMachineModel localobj = new LocalMachineModel();
+            LocalMachineViewModel localobj = new LocalMachineViewModel();
             localIPAddress = localobj.LocalIPAddress;
             connected = localobj.Connected;
+            InternetSpeed = localobj.InternetSpeed;
 
             CheckConnectionColor(connected);
 
@@ -90,7 +105,6 @@ namespace Network_Audit
                 }
 
                 CheckResourcesOnNetworkAsync(AllNetworkResources);
-                MessageBox.Show("Scan Complete!");
             }
             else
             {
@@ -120,12 +134,16 @@ namespace Network_Audit
                 tasks.Add(task);
             }
 
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+
             await Task
                .WhenAll(tasks)
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
 
             NotifyPropertyChanged("ConnectedNetworkResources");
-    }
+            MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s");
+        }
 
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
         {

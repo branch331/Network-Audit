@@ -9,19 +9,23 @@
 
     <Grid>
 
-        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="20" Margin="0,0,0,-0.333">
+        <TextBlock HorizontalAlignment="Left" Grid.Row="1" Padding="10,10,0,50" FontSize="20" Margin="0,0,0,-0.333">
             Network Information
         </TextBlock>
 
-        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table "/><Run Text="below."/></TextBlock>
+        <TextBlock TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table below."/></TextBlock>
 
         <Button Content="Run!" HorizontalAlignment="Left" Margin="320,399,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117"/>
 
-        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="10" Margin="2,52,0,288.667" Width="115" RenderTransformOrigin="0.58,0.388">
+        <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="10" Margin="2,48,0,333.333" Width="73" RenderTransformOrigin="0.58,0.388">
             Connected?
         </TextBlock>
 
-        <Ellipse Fill="{Binding ConnectedColor}" HorizontalAlignment="Left" Height="20" Width="20" Margin="26,76,0,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="-4.167,1.875"/>
+        <Ellipse Fill="{Binding ConnectedColor}" HorizontalAlignment="Left" Height="20" Width="20" Margin="26,72,0,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="-4.167,1.875"/>
+
+        <Label Content="Internet Speed" RenderTransformOrigin="-1.375,1.864" FontSize="10" Margin="146,54,159.667,345.333"/>
+        <TextBox TextWrapping="Wrap" Text="{Binding InternetSpeed}" FontSize="10" Margin="155,74,189.667,329.333" RenderTransformOrigin="0.585,1.075"/>
+        <Label Content="kB/s" Margin="206,68,146.667,330.333"/>
 
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"

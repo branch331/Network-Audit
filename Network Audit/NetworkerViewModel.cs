@@ -8,12 +8,19 @@ using System.Threading;
 
 namespace Network_Audit
 {
-    internal class LocalMachineModel
+    internal class LocalMachineViewModel
     {
-        public LocalMachineModel()
+        public LocalMachineViewModel()
         {
             LocalIPAddress = ObtainIPAddress();
-            Connected = NetworkInterface.GetIsNetworkAvailable();
+            if (Connected = NetworkInterface.GetIsNetworkAvailable())
+            {
+                InternetSpeed = CalculateInternetSpeed().ToString("0.000");
+            }
+            else
+            {
+                InternetSpeed = "N/A";
+            }
         }
 
         public string ObtainIPAddress()
@@ -40,11 +47,11 @@ namespace Network_Audit
 
             DateTime t1 = DateTime.Now;
 
-            byte[] data = webclient.DownloadData("www.google.com");
+            byte[] data = webclient.DownloadData("http://www.google.com");
 
             DateTime t2 = DateTime.Now;
 
-            return ((data.Length / 1024) / (t2 - t1).TotalSeconds);
+            return ((data.Length / 1024) / (t2 - t1).TotalSeconds); //Convert to kB/s
         }
 
         public string LocalIPAddress
@@ -59,7 +66,7 @@ namespace Network_Audit
             private set;
         }
 
-        public double InternetSpeed
+        public string InternetSpeed
         {
             get;
             private set;
