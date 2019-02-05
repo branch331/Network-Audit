@@ -15,7 +15,7 @@
 
         <TextBlock TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table below."/></TextBlock>
 
-        <Button Content="Run!" HorizontalAlignment="Left" Margin="320,399,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117"/>
+        <Button Content="Run!" HorizontalAlignment="Left" Margin="318,397,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117"/>
 
         <TextBlock HorizontalAlignment="Left" Padding="10,10,0,50" FontSize="10" Margin="2,48,0,333.333" Width="73" RenderTransformOrigin="0.58,0.388">
             Connected?
@@ -30,7 +30,7 @@
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
                   Width="385" 
-                  Margin="10,105,0,30.333"
+                  Margin="8,105,0,30.333"
                   IsReadOnly="True"
                   ItemsSource="{Binding ConnectedNetworkResources}">
             <DataGrid.Columns>
@@ -39,5 +39,8 @@
                 <DataGridTextColumn Header="Ping Response (ms)" Binding="{Binding PingResponseTime}" MinWidth="25"/>
             </DataGrid.Columns>
         </DataGrid>
+
+        <ProgressBar Grid.Row="4" Value="{Binding ScanProgress}" Margin="10,399,100.667,9.333"/>
+
     </Grid>
 </Window>
