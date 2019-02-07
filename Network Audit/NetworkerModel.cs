@@ -14,6 +14,7 @@ namespace Network_Audit
         private bool canBeginNetworkAudit;
         private string connectedColor;
         private string internetSpeed;
+        private int deviceCount = 0;
         private int scanProgress = 0;
         private double scansRemaining = 255;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -157,7 +158,7 @@ namespace Network_Audit
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
 
             NotifyPropertyChanged("ConnectedNetworkResources");
-            MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s");
+            MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s\nDevices Found: " + deviceCount.ToString());
         }
 
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
@@ -166,6 +167,7 @@ namespace Network_Audit
             if (model.IsOnNetwork)
             {
                 model.GetHostName();
+                deviceCount++;
             }
             scansRemaining -= 1;
             ScanProgress = Convert.ToInt32(Math.Round(((255- scansRemaining) / 255) * 100));
