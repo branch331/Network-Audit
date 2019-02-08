@@ -10,13 +10,15 @@ namespace Network_Audit
 {
     internal class LocalMachineViewModel
     {
+        /// <summary>
+        /// Obtains IP address and connection information for the local machine.
+        /// </summary>
         public LocalMachineViewModel()
         {
             LocalIPAddress = ObtainIPAddress();
             if (Connected = NetworkInterface.GetIsNetworkAvailable())
             {
                 InternetSpeed = CalculateInternetSpeed().ToString("0.000");
-                //CalculateInternetSpeedAsync();
             }
             else
             {
@@ -72,8 +74,6 @@ namespace Network_Audit
         });
         }
 
-        
-
         public string LocalIPAddress
         {
             get;
@@ -95,12 +95,18 @@ namespace Network_Audit
 
     internal class NetworkerViewModel
     {
+        /// <summary>
+        /// Contains network information for other potential hosts on the network.
+        /// </summary>
+        /// <param name="localIPAddress">IP address of the local machine, used for ping operations to detect the potential host.</param>
+        /// <param name="ipIteration">Value from 0 - 255 to replace the last subnet of the local IP address; used for ping operations.</param>
+        
+        static object lockObj = new object();
+
         public NetworkerViewModel(string localIPAddress, int ipIteration)
         {
             IsOnNetwork = false;
-            //LocalIPAddress = ObtainIPAddress();
             RemoteIPAddress = GetRemoteIP(localIPAddress, ipIteration);
-            //InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
             PingResponseTime = 0;
             HostName = "test";
         }
@@ -125,40 +131,6 @@ namespace Network_Audit
                 }
             }
         }
-
-        public Tuple<bool, double> PingAddress(string address, int packetSize) //return if address is pingable, and the time (ms) to receive a response
-        {
-            bool pingSuccess = false;
-            double responseTime = 0;
-            byte[] packet = new byte[packetSize]; 
-
-            Ping pinger = new Ping();
-
-            try
-            {
-                PingReply reply = pinger.Send(address, 50, packet); //Ping address with 15 ms timeout
-                if (reply.Status == IPStatus.Success)
-                {
-                    pingSuccess = true;
-                    responseTime = reply.RoundtripTime; 
-                }
-            }
-            catch (PingException) 
-            {
-
-            }
-            finally
-            {
-                if (pinger != null)
-                {
-                    pinger.Dispose();
-                }
-            }
-
-            return Tuple.Create(pingSuccess, responseTime);
-        }
-
-        static object lockObj = new object();
 
         public string GetRemoteIP(string localIPAddress, int ipIteration)
         {

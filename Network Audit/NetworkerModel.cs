@@ -10,15 +10,16 @@ namespace Network_Audit
 {
     internal class NetworkerModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private List<NetworkerViewModel> allNetworkResources;
+
         private bool canBeginNetworkAudit;
         private string connectedColor;
         private string internetSpeed;
         private int deviceCount = 0;
         private int scanProgress = 0;
         private double scansRemaining = 255;
-        public event PropertyChangedEventHandler PropertyChanged;
-        static object lockObj = new object();
 
         public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
@@ -105,18 +106,12 @@ namespace Network_Audit
             string localIPAddress;
             bool connected;
 
-            System.Diagnostics.Stopwatch timer1 = new System.Diagnostics.Stopwatch();
-
-            timer1.Start();
-
             LocalMachineViewModel localobj = new LocalMachineViewModel();
             localIPAddress = localobj.LocalIPAddress;
             connected = localobj.Connected;
             InternetSpeed = localobj.InternetSpeed;
 
             CheckConnectionColor(connected);
-
-            System.Windows.MessageBox.Show(timer1.Elapsed.ToString());
 
             if (connected)
             {
@@ -126,7 +121,7 @@ namespace Network_Audit
                     AllNetworkResources.Add(myObj);
                 }
 
-                CheckResourcesOnNetworkAsync(AllNetworkResources);
+                FindResourceHostNamesAsync(AllNetworkResources);
             }
             else
             {
@@ -146,17 +141,15 @@ namespace Network_Audit
             }
         }
 
-        public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
+        //Asynchronously iterate through network resources to find if they are connected, and their hostnames
+        public async void FindResourceHostNamesAsync(List<NetworkerViewModel> networkResources) 
         {
             var tasks = new List<Task>();
-            var tasks1 = new List<Task>();
 
             foreach (NetworkerViewModel x in networkResources)
             {
-                var task = CheckResourcesOnNetworkTask(x);
-                var task1 = GetResourceHostNameTask(x);
+                var task = FindResourceHostNamesTask(x);
                 tasks.Add(task);
-                tasks1.Add(task1);
             }
 
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
@@ -166,20 +159,14 @@ namespace Network_Audit
                .WhenAll(tasks)
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
 
-            //await Task
-              //  .WhenAll(tasks1)
-                //.ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
-
             MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s\nDevices Found: " + deviceCount.ToString());
-            //NotifyPropertyChanged("ConnectedNetworkResources");
         }
 
-        private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
+        private async Task FindResourceHostNamesTask(NetworkerViewModel model)
         {
             await model.CheckIsOnNetworkTask();
             if (model.IsOnNetwork)
             {
-                //model.GetHostName();
                 await model.GetHostNameAsync();
                 deviceCount++;
             }
