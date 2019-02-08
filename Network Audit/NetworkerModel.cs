@@ -105,12 +105,18 @@ namespace Network_Audit
             string localIPAddress;
             bool connected;
 
+            System.Diagnostics.Stopwatch timer1 = new System.Diagnostics.Stopwatch();
+
+            timer1.Start();
+
             LocalMachineViewModel localobj = new LocalMachineViewModel();
             localIPAddress = localobj.LocalIPAddress;
             connected = localobj.Connected;
             InternetSpeed = localobj.InternetSpeed;
 
             CheckConnectionColor(connected);
+
+            System.Windows.MessageBox.Show(timer1.Elapsed.ToString());
 
             if (connected)
             {

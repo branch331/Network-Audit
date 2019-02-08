@@ -15,7 +15,8 @@ namespace Network_Audit
             LocalIPAddress = ObtainIPAddress();
             if (Connected = NetworkInterface.GetIsNetworkAvailable())
             {
-                InternetSpeed = CalculateInternetSpeed().ToString("0.000");
+                //InternetSpeed = CalculateInternetSpeed().ToString("0.000");
+                CalculateInternetSpeedAsync();
             }
             else
             {
@@ -46,13 +47,32 @@ namespace Network_Audit
             System.Net.WebClient webclient = new System.Net.WebClient();
 
             DateTime t1 = DateTime.Now;
-
             byte[] data = webclient.DownloadData("http://www.google.com");
-
             DateTime t2 = DateTime.Now;
 
             return ((data.Length / 1024) / (t2 - t1).TotalSeconds); //Convert to kB/s
         }
+
+        public async void CalculateInternetSpeedAsync()
+        {
+            await CalculateInternetSpeedTask();
+        }
+
+        public Task CalculateInternetSpeedTask()
+        {
+            return Task.Run(() =>
+            {
+                System.Net.WebClient webclient = new System.Net.WebClient();
+
+                DateTime t1 = DateTime.Now;
+                byte[] data = webclient.DownloadData("http://www.google.com");
+                DateTime t2 = DateTime.Now;
+
+                InternetSpeed = ((data.Length / 1024) / ((t2 - t1).TotalSeconds)).ToString("0.000");
+        });
+        }
+
+        
 
         public string LocalIPAddress
         {
