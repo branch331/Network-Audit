@@ -149,11 +149,14 @@ namespace Network_Audit
         public async void CheckResourcesOnNetworkAsync(List<NetworkerViewModel> networkResources)
         {
             var tasks = new List<Task>();
+            var tasks1 = new List<Task>();
 
             foreach (NetworkerViewModel x in networkResources)
             {
                 var task = CheckResourcesOnNetworkTask(x);
+                var task1 = GetResourceHostNameTask(x);
                 tasks.Add(task);
+                tasks1.Add(task1);
             }
 
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
@@ -163,8 +166,12 @@ namespace Network_Audit
                .WhenAll(tasks)
                .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
 
-            NotifyPropertyChanged("ConnectedNetworkResources");
+            //await Task
+              //  .WhenAll(tasks1)
+                //.ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
+
             MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s\nDevices Found: " + deviceCount.ToString());
+            //NotifyPropertyChanged("ConnectedNetworkResources");
         }
 
         private async Task CheckResourcesOnNetworkTask(NetworkerViewModel model)
@@ -172,12 +179,21 @@ namespace Network_Audit
             await model.CheckIsOnNetworkTask();
             if (model.IsOnNetwork)
             {
-                model.GetHostName();
+                //model.GetHostName();
+                await model.GetHostNameAsync();
                 deviceCount++;
             }
             scansRemaining -= 1;
             ScanProgress = Convert.ToInt32(Math.Round(((255- scansRemaining) / 255) * 100));
             //NotifyPropertyChanged("ScanProgress");
+        }
+
+        private async Task GetResourceHostNameTask(NetworkerViewModel model)
+        {
+            if (model.IsOnNetwork)
+            {
+                await model.GetHostNameAsync();
+            }
         }
 
         protected virtual void NotifyPropertyChanged(string propertyName)

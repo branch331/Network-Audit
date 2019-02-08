@@ -15,8 +15,8 @@ namespace Network_Audit
             LocalIPAddress = ObtainIPAddress();
             if (Connected = NetworkInterface.GetIsNetworkAvailable())
             {
-                //InternetSpeed = CalculateInternetSpeed().ToString("0.000");
-                CalculateInternetSpeedAsync();
+                InternetSpeed = CalculateInternetSpeed().ToString("0.000");
+                //CalculateInternetSpeedAsync();
             }
             else
             {
@@ -100,9 +100,9 @@ namespace Network_Audit
             IsOnNetwork = false;
             //LocalIPAddress = ObtainIPAddress();
             RemoteIPAddress = GetRemoteIP(localIPAddress, ipIteration);
-
             //InternetSpeed = CalculateInternetSpeed(); // Method doesn't seem proper
             PingResponseTime = 0;
+            HostName = "test";
         }
 
         public async void CheckIsOnNetworkAsync()
@@ -176,6 +176,29 @@ namespace Network_Audit
             {
                 HostName = "Unavailable";
             }
+        }
+
+        public async Task GetHostNameAsync()
+        {
+            HostName = await GetHostNameTask();
+        }
+
+        public async Task<string> GetHostNameTask()
+        {
+            string hostName = "";
+            await Task.Run(() =>
+            { 
+                try
+                {
+                    hostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
+                }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    hostName = "Unavailable";
+                }
+            });
+
+            return hostName;
         }
 
         public bool IsOnNetwork
