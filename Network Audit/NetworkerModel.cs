@@ -14,13 +14,18 @@ namespace Network_Audit
 
         private List<NetworkerViewModel> allNetworkResources;
 
-        private bool canBeginNetworkAudit;
+        private bool canBeginNetworkAudit = true;
         private string connectedColor;
         private string internetSpeed;
         private int deviceCount;
         private int scanProgress;
         private double scansRemaining;
         static object lockObj = new object();
+
+        public NetworkerModel()
+        {
+            CanBeginNetworkAudit = true;
+        }
 
         public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
@@ -101,7 +106,7 @@ namespace Network_Audit
             }
         }
 
-        public void StartAudit()
+        public async void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
             string localIPAddress = "";
@@ -110,6 +115,8 @@ namespace Network_Audit
             deviceCount = 0;
             scanProgress = 0;
             scansRemaining = 255;
+
+            CanBeginNetworkAudit = false;
 
             LocalMachineViewModel localobj = new LocalMachineViewModel();
             localIPAddress = localobj.LocalIPAddress;
@@ -126,12 +133,14 @@ namespace Network_Audit
                     AllNetworkResources.Add(myObj);
                 }
 
-                FindResourceHostNamesAsync(AllNetworkResources);
+                await FindResourceHostNamesAsync(AllNetworkResources);
             }
             else
             {
                 MessageBox.Show("Unable to scan. Network is unavailable.");
             }
+
+            CanBeginNetworkAudit = true; 
         }
 
         public void CheckConnectionColor(bool connected)
@@ -147,7 +156,7 @@ namespace Network_Audit
         }
 
         //Asynchronously iterate through network resources to find if they are connected, and their hostnames
-        public async void FindResourceHostNamesAsync(List<NetworkerViewModel> networkResources) 
+        private async Task FindResourceHostNamesAsync(List<NetworkerViewModel> networkResources) 
         {
             var tasks = new List<Task>();
 
