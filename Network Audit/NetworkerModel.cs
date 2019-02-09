@@ -17,9 +17,10 @@ namespace Network_Audit
         private bool canBeginNetworkAudit;
         private string connectedColor;
         private string internetSpeed;
-        private int deviceCount = 0;
-        private int scanProgress = 0;
-        private double scansRemaining = 255;
+        private int deviceCount;
+        private int scanProgress;
+        private double scansRemaining;
+        static object lockObj = new object();
 
         public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
@@ -103,8 +104,12 @@ namespace Network_Audit
         public void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
-            string localIPAddress;
-            bool connected;
+            string localIPAddress = "";
+            bool connected = false;
+
+            deviceCount = 0;
+            scanProgress = 0;
+            scansRemaining = 255;
 
             LocalMachineViewModel localobj = new LocalMachineViewModel();
             localIPAddress = localobj.LocalIPAddress;
@@ -148,7 +153,7 @@ namespace Network_Audit
 
             foreach (NetworkerViewModel x in networkResources)
             {
-                var task = FindResourceHostNamesTask(x);
+                Task task = FindResourceHostNamesTask(x);
                 tasks.Add(task);
             }
 
@@ -165,16 +170,17 @@ namespace Network_Audit
         private async Task FindResourceHostNamesTask(NetworkerViewModel model)
         {
             await model.CheckIsOnNetworkTask();
+
             if (model.IsOnNetwork)
             {
                 await model.GetHostNameAsync();
                 deviceCount++;
             }
+
             scansRemaining -= 1;
             ScanProgress = Convert.ToInt32(Math.Round(((255- scansRemaining) / 255) * 100));
-            //NotifyPropertyChanged("ScanProgress");
         }
-
+        
         private async Task GetResourceHostNameTask(NetworkerViewModel model)
         {
             if (model.IsOnNetwork)

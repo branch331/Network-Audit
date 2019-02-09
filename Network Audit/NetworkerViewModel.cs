@@ -120,9 +120,9 @@ namespace Network_Audit
         {
             Ping pinger = new Ping();
 
-            var reply = await pinger.SendPingAsync(RemoteIPAddress, 200);
+            var reply = await pinger.SendPingAsync(RemoteIPAddress, 5000);
 
-            lock(lockObj)
+            lock (lockObj)
             {
                 if (reply.Status == IPStatus.Success)
                 {
