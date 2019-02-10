@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Network_Audit"
         mc:Ignorable="d"
-        Title="Network Information" Height="458.667" Width="409.196">
+        Title="Network Audit" Height="458.667" Width="409.196">
 
     <Grid>
 
         <TextBlock HorizontalAlignment="Left" Grid.Row="1" Padding="10,10,0,50" FontSize="20" Margin="0,0,0,-0.333">
-            Network Information
+            Network Audit
         </TextBlock>
 
-        <TextBlock TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Left" FontSize="10" Padding="10,40,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the table below."/></TextBlock>
+        <TextBlock TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Left" FontSize="10" Padding="10,38,20,50" Margin="0,0,0,-0.333" Grid.ColumnSpan="3" Width="395"><Run Text="This application returns network information in the fields below."/></TextBlock>
 
         <Button Content="Run!" IsEnabled="{Binding CanBeginNetworkAudit}" HorizontalAlignment="Left" Margin="318,397,0,0" VerticalAlignment="Top" Width="75" Click="RunButton" RenderTransformOrigin="-0.524,3.117"/>
 
@@ -27,6 +27,9 @@
         <TextBox TextWrapping="Wrap" Text="{Binding InternetSpeed}" IsReadOnly="True" FontSize="10" Margin="155,74,189.667,329.333" RenderTransformOrigin="0.585,1.075"/>
         <Label Content="kB/s" Margin="206,68,146.667,330.333"/>
 
+        <Label Content="Hosts Found" RenderTransformOrigin="-1.375,1.864" FontSize="10" Margin="286,55,-0.333,344.333"/>
+        <TextBox TextWrapping="Wrap" Text="{Binding DeviceCount}" IsReadOnly="True" FontSize="10" Margin="289,74,55.667,328.333" RenderTransformOrigin="0.585,1.075"/>
+
         <DataGrid AutoGenerateColumns="False"
                   HorizontalAlignment="Left"
                   Width="385" 
@@ -35,7 +38,7 @@
                   ItemsSource="{Binding ConnectedNetworkResources}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="IP Address" Binding="{Binding RemoteIPAddress}" MinWidth="100"/>
-                <DataGridTextColumn Header="HostName" Binding="{Binding HostName}" MinWidth="100"/>
+                <DataGridTextColumn Header="HostName" Binding="{Binding HostName}" MinWidth="25" Width="160"/>
                 <DataGridTextColumn Header="Ping Response (ms)" Binding="{Binding PingResponseTime}" MinWidth="25"/>
             </DataGrid.Columns>
         </DataGrid>

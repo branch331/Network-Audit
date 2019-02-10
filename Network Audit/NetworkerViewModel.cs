@@ -55,25 +55,6 @@ namespace Network_Audit
             return ((data.Length / 1024) / (t2 - t1).TotalSeconds); //Convert to kB/s
         }
 
-        public async void CalculateInternetSpeedAsync()
-        {
-            await CalculateInternetSpeedTask();
-        }
-
-        public Task CalculateInternetSpeedTask()
-        {
-            return Task.Run(() =>
-            {
-                System.Net.WebClient webclient = new System.Net.WebClient();
-
-                DateTime t1 = DateTime.Now;
-                byte[] data = webclient.DownloadData("http://www.google.com");
-                DateTime t2 = DateTime.Now;
-
-                InternetSpeed = ((data.Length / 1024) / ((t2 - t1).TotalSeconds)).ToString("0.000");
-        });
-        }
-
         public string LocalIPAddress
         {
             get;
@@ -101,8 +82,6 @@ namespace Network_Audit
         /// <param name="localIPAddress">IP address of the local machine, used for ping operations to detect the potential host.</param>
         /// <param name="ipIteration">Value from 0 - 255 to replace the last subnet of the local IP address; used for ping operations.</param>
         
-        static object lockObj = new object();
-
         public NetworkerViewModel(string localIPAddress, int ipIteration)
         {
             IsOnNetwork = false;
@@ -122,13 +101,10 @@ namespace Network_Audit
 
             var reply = await pinger.SendPingAsync(RemoteIPAddress, 5000);
 
-            lock (lockObj)
+            if (reply.Status == IPStatus.Success)
             {
-                if (reply.Status == IPStatus.Success)
-                {
-                    IsOnNetwork = true;
-                    PingResponseTime = reply.RoundtripTime;
-                }
+                IsOnNetwork = true;
+                PingResponseTime = reply.RoundtripTime;
             }
         }
 

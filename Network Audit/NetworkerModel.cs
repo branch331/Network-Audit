@@ -20,7 +20,6 @@ namespace Network_Audit
         private int deviceCount;
         private int scanProgress;
         private double scansRemaining;
-        static object lockObj = new object();
 
         public NetworkerModel()
         {
@@ -106,6 +105,18 @@ namespace Network_Audit
             }
         }
 
+        public int DeviceCount
+        {
+            get { return deviceCount; }
+            set
+            {
+                if (deviceCount != value)
+                {
+                    deviceCount = value;
+                }
+            }
+        }
+
         public async void StartAudit()
         {
             AllNetworkResources = new List<NetworkerViewModel>();
@@ -171,9 +182,13 @@ namespace Network_Audit
 
             await Task
                .WhenAll(tasks)
-               .ContinueWith(t => { NotifyPropertyChanged("ConnectedNetworkResources"); });
+               .ContinueWith(t => 
+               {
+                   NotifyPropertyChanged("ConnectedNetworkResources");
+                   NotifyPropertyChanged("DeviceCount");
+               });
 
-            MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.Seconds + " s\nDevices Found: " + deviceCount.ToString());
+            MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.ToString("s\\.fff") + " s\nDevices Found: " + deviceCount.ToString());
         }
 
         private async Task FindResourceHostNamesTask(NetworkerViewModel model)
@@ -187,7 +202,7 @@ namespace Network_Audit
             }
 
             scansRemaining -= 1;
-            ScanProgress = Convert.ToInt32(Math.Round(((255- scansRemaining) / 255) * 100));
+            ScanProgress = Convert.ToInt32(Math.Round(((255 - scansRemaining) / 255) * 100));
         }
         
         private async Task GetResourceHostNameTask(NetworkerViewModel model)
