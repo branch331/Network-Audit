@@ -13,8 +13,9 @@ This class contains information for the local machine such as the local IP addre
 This class contains information for any remote device on the same network as the local machine. It will have its own remote IP address,
 and we will test if the device is on the network (with asynchronous pings), and obtain its hostname if so.
 
+
 ### NetworkerModel.cs
 The view for the application; this first instantiates an object for the LocalMachineViewModel class, and then asynchronously iterates through 
 all IP addresses on its subnet to identify if the device is actually on the network.
 
-![Alt text]("demo.gif")
+![Alt text](demo.gif)
