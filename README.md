@@ -1,5 +1,6 @@
 # Network-Audit
 This application performs an asynchronous IP ping sweep and returns network information using C#/WPF and the System.Net Dns class. 
+
 ![Alt text](demo.gif)
 
 First, a network connection is confirmed and internet speed determined, then the table is populated with devices found on the network.
