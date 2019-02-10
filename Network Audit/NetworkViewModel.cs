@@ -8,11 +8,11 @@ using System.Windows;
 
 namespace Network_Audit
 {
-    internal class NetworkerModel : INotifyPropertyChanged
+    internal class NetworkViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private List<NetworkerViewModel> allNetworkResources;
+        private List<RemoteMachineModel> allNetworkResources;
 
         private bool canBeginNetworkAudit = true;
         private string connectedColor;
@@ -21,25 +21,25 @@ namespace Network_Audit
         private int scanProgress;
         private double scansRemaining;
 
-        public NetworkerModel()
+        public NetworkViewModel()
         {
             CanBeginNetworkAudit = true;
         }
 
-        public IEnumerable<NetworkerViewModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
+        public IEnumerable<RemoteMachineModel> ConnectedNetworkResources //Make a public list to bind to the DataGrid ItemsSource
         {
             get
             {
                 if (AllNetworkResources == null)
                 {
-                    return Enumerable.Empty<NetworkerViewModel>();
+                    return Enumerable.Empty<RemoteMachineModel>();
                 }
                 return AllNetworkResources
                     .Where(x => x.IsOnNetwork == true);
             }
         }
 
-        private List<NetworkerViewModel> AllNetworkResources
+        private List<RemoteMachineModel> AllNetworkResources
         {
             get { return allNetworkResources; }
             set
@@ -119,7 +119,7 @@ namespace Network_Audit
 
         public async void StartAudit()
         {
-            AllNetworkResources = new List<NetworkerViewModel>();
+            AllNetworkResources = new List<RemoteMachineModel>();
             string localIPAddress = "";
             bool connected = false;
 
@@ -129,7 +129,7 @@ namespace Network_Audit
 
             CanBeginNetworkAudit = false;
 
-            LocalMachineViewModel localobj = new LocalMachineViewModel();
+            LocalMachineModel localobj = new LocalMachineModel();
             localIPAddress = localobj.LocalIPAddress;
             connected = localobj.Connected;
             InternetSpeed = localobj.InternetSpeed;
@@ -140,7 +140,7 @@ namespace Network_Audit
             {
                 for (int i = 0; i < 255; i++) 
                 {
-                    NetworkerViewModel myObj = new NetworkerViewModel(localIPAddress, i);
+                    RemoteMachineModel myObj = new RemoteMachineModel(localIPAddress, i);
                     AllNetworkResources.Add(myObj);
                 }
 
@@ -167,11 +167,11 @@ namespace Network_Audit
         }
 
         //Asynchronously iterate through network resources to find if they are connected, and their hostnames
-        private async Task FindResourceHostNamesAsync(List<NetworkerViewModel> networkResources) 
+        private async Task FindResourceHostNamesAsync(List<RemoteMachineModel> networkResources) 
         {
             var tasks = new List<Task>();
 
-            foreach (NetworkerViewModel x in networkResources)
+            foreach (RemoteMachineModel x in networkResources)
             {
                 Task task = FindResourceHostNamesTask(x);
                 tasks.Add(task);
@@ -191,7 +191,7 @@ namespace Network_Audit
             MessageBox.Show("Scan Complete!\nTime Elapsed: " + timer.Elapsed.ToString("s\\.fff") + " s\nDevices Found: " + deviceCount.ToString());
         }
 
-        private async Task FindResourceHostNamesTask(NetworkerViewModel model)
+        private async Task FindResourceHostNamesTask(RemoteMachineModel model)
         {
             await model.CheckIsOnNetworkTask();
 
@@ -205,7 +205,7 @@ namespace Network_Audit
             ScanProgress = Convert.ToInt32(Math.Round(((255 - scansRemaining) / 255) * 100));
         }
         
-        private async Task GetResourceHostNameTask(NetworkerViewModel model)
+        private async Task GetResourceHostNameTask(RemoteMachineModel model)
         {
             if (model.IsOnNetwork)
             {

@@ -8,81 +8,15 @@ using System.Threading;
 
 namespace Network_Audit
 {
-    internal class LocalMachineViewModel
-    {
-        /// <summary>
-        /// Obtains IP address and connection information for the local machine.
-        /// </summary>
-        public LocalMachineViewModel()
-        {
-            LocalIPAddress = ObtainIPAddress();
-            if (Connected = NetworkInterface.GetIsNetworkAvailable())
-            {
-                InternetSpeed = CalculateInternetSpeed().ToString("0.000");
-            }
-            else
-            {
-                InternetSpeed = "N/A";
-            }
-        }
-
-        public string ObtainIPAddress()
-        {
-            string ip_Address = "";
-
-            foreach (NetworkInterface x in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (x.OperationalStatus == OperationalStatus.Up)
-                {
-                    foreach (GatewayIPAddressInformation y in x.GetIPProperties().GatewayAddresses)
-                    {
-                        ip_Address = y.Address.ToString();
-                    }
-                }
-            }
-
-            return ip_Address;
-        }
-
-        public double CalculateInternetSpeed()
-        {
-            System.Net.WebClient webclient = new System.Net.WebClient();
-
-            DateTime t1 = DateTime.Now;
-            byte[] data = webclient.DownloadData("http://www.google.com");
-            DateTime t2 = DateTime.Now;
-
-            return ((data.Length / 1024) / (t2 - t1).TotalSeconds); //Convert to kB/s
-        }
-
-        public string LocalIPAddress
-        {
-            get;
-            private set;
-        }
-
-        public bool Connected
-        {
-            get;
-            private set;
-        }
-
-        public string InternetSpeed
-        {
-            get;
-            private set;
-        }
-    }
-
-    internal class NetworkerViewModel
+    internal class RemoteMachineModel
     {
         /// <summary>
         /// Contains network information for other potential hosts on the network.
         /// </summary>
         /// <param name="localIPAddress">IP address of the local machine, used for ping operations to detect the potential host.</param>
         /// <param name="ipIteration">Value from 0 - 255 to replace the last subnet of the local IP address; used for ping operations.</param>
-        
-        public NetworkerViewModel(string localIPAddress, int ipIteration)
+
+        public RemoteMachineModel(string localIPAddress, int ipIteration)
         {
             IsOnNetwork = false;
             RemoteIPAddress = GetRemoteIP(localIPAddress, ipIteration);
@@ -135,7 +69,7 @@ namespace Network_Audit
         {
             string hostName = "";
             await Task.Run(() =>
-            { 
+            {
                 try
                 {
                     hostName = System.Net.Dns.GetHostEntry(RemoteIPAddress).HostName;
