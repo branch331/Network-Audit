@@ -9,7 +9,7 @@ First, a network connection is confirmed and internet speed determined, then the
 The viewmodel for the application; this first instantiates an object for the LocalMachineModel class, and then asynchronously iterates through 
 all IP addresses on its subnet using the RemoteMachineModel class to identify if the device is actually on the network.
 
-#### LocalMachineModel.cs
+### LocalMachineModel.cs
 This class contains information for the local machine such as the local IP address, if a network is available, and internet speed.
 
 ### RemoteMachineModel.cs
